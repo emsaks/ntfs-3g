@@ -287,7 +287,7 @@ u64 ntfs_inode_lookup_by_name(ntfs_inode *dir_ni,
 			le16_to_cpu(ctx->attr->value_offset));
 	index_block_size = le32_to_cpu(ir->index_block_size);
 	if (index_block_size < NTFS_BLOCK_SIZE ||
-			index_block_size & (index_block_size - 1)) {
+			index_block_size & (index_block_size - 1)) { /* size != 2^n */
 		ntfs_log_error("Index block size %u is invalid.\n",
 				(unsigned)index_block_size);
 		goto put_err_out;
@@ -380,6 +380,7 @@ u64 ntfs_inode_lookup_by_name(ntfs_inode *dir_ni,
 	}
 
 	/* Determine the size of a vcn in the directory index. */
+	/* {Apparently, VCNs are either cluster sized or sector sized...} */
 	if (vol->cluster_size <= index_block_size) {
 		index_vcn_size_bits = vol->cluster_size_bits;
 	} else {
